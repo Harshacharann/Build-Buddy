@@ -1,0 +1,138 @@
+/*
+ * style.css – Visual design for the calculator
+ * -------------------------------------------------
+ * Root variables define the colour palette, sizing, and typography.
+ * The CSS is self‑contained and can be linked directly from index.html.
+ * No JavaScript dependencies are required for the styling.
+ */
+
+:root {
+    /* Colour palette */
+    --bg-color: #f5f5f5;               /* Overall background of the calculator */
+    --display-bg: #212121;            /* Display background (dark) */
+    --display-color: #ffffff;         /* Display text colour */
+    --digit-bg: #e0e0e0;               /* Digits (0‑9 and decimal) */
+    --digit-color: #212121;           /* Digits text colour */
+    --operator-bg: #ffb74d;           /* Operators (+, –, *, /) */
+    --operator-color: #212121;        /* Operator text colour */
+    --control-bg: #ef9a9a;            /* Clear, backspace, equals */
+    --control-color: #212121;         /* Control text colour */
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    /* Sizing */
+    --max-width: 400px;               /* Max width of the calculator */
+    --button-height: 60px;            /* Height of each button */
+    --button-font-size: 1rem;         /* Base font size for buttons */
+    --display-height: 70px;           /* Height of the display area */
+    --display-font-size: 2rem;        /* Font size inside the display */
+
+    /* Typography */
+    --font-family: 'Arial', sans-serif;
+}
+
+/* -------------------------------------------------
+ * .calculator – main container (HTML: <div class="calculator">)
+ * ------------------------------------------------- */
+.calculator {
+    max-width: var(--max-width);
+    margin: 2rem auto;               /* Center horizontally with vertical spacing */
+    background: var(--bg-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1rem;
+    font-family: var(--font-family);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* -------------------------------------------------
+ * .display – calculator screen (HTML: <div class="display" id="calc-display">)
+ * ------------------------------------------------- */
+.display {
+    height: var(--display-height);
+    background: var(--display-bg);
+    color: var(--display-color);
+    text-align: right;
+    font-size: var(--display-font-size);
+    line-height: var(--display-height);
+    padding: 0 0.75rem;
+    border-radius: calc(var(--border-radius) / 2);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+/* -------------------------------------------------
+ * .buttons-grid – container for all calculator buttons
+ * ------------------------------------------------- */
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+/* -------------------------------------------------
+ * .calc-btn – individual button (HTML: <button class="calc-btn" ...>)
+ * ------------------------------------------------- */
+.calc-btn {
+    height: var(--button-height);
+    font-size: var(--button-font-size);
+    background: var(--digit-bg);
+    color: var(--digit-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.calc-btn:active {
+    transform: translateY(2px);
+}
+
+.calc-btn:focus-visible {
+    outline: 2px solid #2196F3;
+    outline-offset: 2px;
+}
+
+/* Data‑action specific colours */
+.calc-btn[data-action="digit"] {
+    background: var(--digit-bg);
+    color: var(--digit-color);
+}
+
+.calc-btn[data-action="operator"] {
+    background: var(--operator-bg);
+    color: var(--operator-color);
+}
+
+.calc-btn[data-action="clear"],
+.calc-btn[data-action="backspace"],
+.calc-btn[data-action="equals"] {
+    background: var(--control-bg);
+    color: var(--control-color);
+}
+
+/* -------------------------------------------------
+ * Responsive adjustments – screens narrower than 600px
+ * ------------------------------------------------- */
+@media (max-width: 600px) {
+    .calculator {
+        margin: 1rem;
+        max-width: 100%;
+    }
+    .calc-btn {
+        font-size: 1.2rem;           /* Slightly larger text for touch devices */
+        height: 70px;                /* Bigger tap target */
+    }
+    .display {
+        font-size: 2.5rem;
+    }
+}
