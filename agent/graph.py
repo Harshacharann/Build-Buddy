@@ -1,18 +1,20 @@
-from langchain_groq import ChatGroq
 from dotenv import load_dotenv
-from states import *
-from prompts import *
-from langgraph.graph import StateGraph
+from langchain.globals import set_verbose, set_debug
+from langchain_groq.chat_models import ChatGroq
 from langgraph.constants import END
+from langgraph.graph import StateGraph
 from langgraph.prebuilt import create_react_agent
 
-from tools import *
+from agent.prompts import *
+from agent.states import *
+from agent.tools import write_file, read_file, get_current_directory, list_files
 
-load_dotenv()
+_ = load_dotenv()
 
+set_debug(True)
+set_verbose(True)
 
 llm = ChatGroq(model="openai/gpt-oss-120b")
-user_prompt = "Build a todo app with user authentication and a REST API using React,fastapi, python and MongoDB."
 
 
 def planner_agent(state: dict) -> dict:
@@ -39,6 +41,7 @@ def architect_agent(state: dict) -> dict:
 
 
 def coder_agent(state: dict) -> dict:
+    """LangGraph tool-using coder agent."""
     coder_state: CoderState = state.get("coder_state")
     if coder_state is None:
         coder_state = CoderState(task_plan=state["task_plan"], current_step_idx=0)
@@ -75,11 +78,13 @@ def coder_agent(state: dict) -> dict:
 
 
 graph = StateGraph(dict)
+
 graph.add_node("planner", planner_agent)
 graph.add_node("architect", architect_agent)
 graph.add_node("coder", coder_agent)
-graph.add_edge(start_key="planner", end_key="architect")
-graph.add_edge(start_key="architect", end_key="coder")
+
+graph.add_edge("planner", "architect")
+graph.add_edge("architect", "coder")
 graph.add_conditional_edges(
     "coder",
     lambda s: "END" if s.get("status") == "DONE" else "coder",
@@ -87,11 +92,10 @@ graph.add_conditional_edges(
 )
 
 graph.set_entry_point("planner")
-
 agent = graph.compile()
 if __name__ == "__main__":
     result = agent.invoke(
-        {"user_prompt": "Build a simple web calculator"},
-        {"recursion_limit": 60},
+        {"user_prompt": "Build a colourful modern todo app in html css and js"},
+        {"recursion_limit": 100},
     )
     print("Final State:", result)
